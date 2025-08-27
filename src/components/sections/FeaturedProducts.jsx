@@ -3,6 +3,8 @@
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
+import InteractiveButton from '../ui/InteractiveButton';
+import AnimatedCounter from '../ui/AnimatedCounter';
 
 const products = [
   {
@@ -223,25 +225,41 @@ const ProductCard = ({ product, index }) => {
 
             <motion.button
               whileTap={{ scale: 0.95 }}
-              className="relative w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 text-white py-3 rounded-2xl overflow-hidden font-bold text-lg shadow-lg"
+              className="relative w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 text-white py-3 rounded-2xl overflow-hidden font-bold text-lg shadow-lg group"
               style={{ x: btnX, y: btnY }}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
-                Add to Cart
                 <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  whileHover={{ rotate: [0, -10, 10, 0] }}
+                  transition={{ duration: 0.5 }}
                 >
                   🛒
                 </motion.span>
+                Add to Cart
               </span>
               
               {/* Animated background */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                className="absolute inset-0 bg-gradient-to-r from-white/30 via-yellow-300/20 to-transparent"
                 initial={{ x: '-100%' }}
-                whileHover={{ x: '100%' }}
-                transition={{ duration: 0.6 }}
+                animate={{ x: ['100%', '-100%'] }}
+                transition={{ 
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: 'loop',
+                  ease: 'linear'
+                }}
+              />
+              
+              {/* Pulse effect on hover */}
+              <motion.div
+                className="absolute inset-0 bg-white/10 rounded-2xl"
+                initial={{ scale: 1, opacity: 0 }}
+                whileHover={{ 
+                  scale: [1, 1.05, 1],
+                  opacity: [0, 0.3, 0]
+                }}
+                transition={{ duration: 0.6, repeat: Infinity }}
               />
             </motion.button>
           </div>
@@ -263,10 +281,26 @@ const ProductCard = ({ product, index }) => {
                     key={i}
                     className="flex items-center space-x-2"
                     initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    animate={{ 
+                      opacity: 1, 
+                      x: 0,
+                      transition: { delay: i * 0.1 }
+                    }}
                     transition={{ delay: i * 0.1 }}
+                    whileHover={{ x: 5, scale: 1.05 }}
                   >
-                    <span className="w-2 h-2 bg-white rounded-full"></span>
+                    <motion.span 
+                      className="w-2 h-2 bg-white rounded-full"
+                      animate={{ 
+                        scale: [1, 1.2, 1],
+                        opacity: [1, 0.7, 1]
+                      }}
+                      transition={{ 
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: i * 0.3
+                      }}
+                    />
                     <span>{feature}</span>
                   </motion.li>
                 ))}
@@ -274,13 +308,13 @@ const ProductCard = ({ product, index }) => {
             </div>
 
             <div className="mt-8 text-center">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-white text-blue-600 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors"
+              <InteractiveButton
+                variant="secondary"
+                size="md"
+                className="bg-white text-blue-600 hover:bg-gray-100"
               >
                 View Details
-              </motion.button>
+              </InteractiveButton>
             </div>
           </div>
         </motion.div>
@@ -374,7 +408,7 @@ const FeaturedProducts = () => {
             >
               💡 Click cards to flip and see features
             </motion.span>
-          </motion.div>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -383,28 +417,70 @@ const FeaturedProducts = () => {
           ))}
         </div>
 
-        {/* Call to action */}
+        {/* Stats section */}
         <motion.div
-          className="text-center mt-16"
-          initial={{ opacity: 0, y: 30 }}
+          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-6"
+          initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
         >
-          <motion.button
-            whileHover={{ 
-              scale: 1.05, 
-              boxShadow: '0 20px 40px rgba(59, 130, 246, 0.3)' 
-            }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300"
-          >
-            View All Products →
-          </motion.button>
-        </motion.div>
-      </div>
-    </section>
-  );
-};
-
-export default FeaturedProducts;
+          {[
+            { number: '10K+', label: 'Happy Customers', color: 'from-blue-400 to-cyan-400' },
+            { number: '500+', label: 'Products', color: 'from-purple-400 to-pink-400' },
+            { number: '24/7', label: 'Support', color: 'from-green-400 to-emerald-400' },
+            { number: '30-Day', label: 'Guarantee', color: 'from-orange-400 to-red-400' },
+          ].map((stat, index) => (
+            <motion.div 
+              key={stat.label}
+              className="relative p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-xl group cursor-pointer"
+              initial={{ opacity: 0, y: 30, rotateY: -15 }}
+              animate={{ 
+                opacity: 1, 
+                y: 0, 
+                rotateY: 0,
+                transition: { delay: index * 0.1 }
+              }}
+              whileHover={{ 
+                scale: 1.05, 
+                y: -5,
+                boxShadow: '0 20px 40px rgba(255,255,255,0.2)',
+                rotateY: 5
+              }}
+            >
+              <AnimatedCounter
+                to={parseInt(stat.number.replace(/\D/g, '')) || 24}
+                suffix={stat.number.includes('+') ? '+' : stat.number.includes('-') ? '-Day' : ''}
+                className={`text-3xl md:text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 block`}
+              />
+              <div className="text-sm text-gray-300 font-medium">{stat.label}</div>
+              
+              {/* Hover glow effect */}
+              <motion.div
+                className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                animate={{
+                  background: [
+                    'radial-gradient(circle at 0% 0%, rgba(59,130,246,0.1), transparent)',
+                    'radial-gradient(circle at 100% 100%, rgba(139,92,246,0.1), transparent)',
+                    'radial-gradient(circle at 0% 100%, rgba(236,72,153,0.1), transparent)',
+                    'radial-gradient(circle at 100% 0%, rgba(59,130,246,0.1), transparent)',
+                  ]
+                }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+              
+              {/* Animated border */}
+              <motion.div
+                className="absolute inset-0 rounded-2xl"
+                style={{ 
+                  background: 'linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent)',
+                  mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                  maskComposite: 'xor',
+                  padding: '2px'
+                }}
+                animate={{ 
+                  background: [
+                    'linear-gradient(0deg, transparent, rgba(255,255,255,0.2), transparent)',
+                    'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                    'linear-gradient(180deg, transparent, rgba(255,255,255,0.2), transparent)',
+                    'linear-gradient(270deg, transparent, rgba(255,255,255,0
