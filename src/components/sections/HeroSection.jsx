@@ -4,6 +4,11 @@ import { motion, useAnimation, useInView, useMotionValue, useSpring, useTransfor
 import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import * as THREE from 'three';
+import ParticleField from '../ui/ParticleField';
+import MorphingBlob from '../ui/MorphingBlob';
+import FloatingElements from '../ui/FloatingElements';
+import InteractiveButton from '../ui/InteractiveButton';
+import GlitchText from '../ui/GlitchText';
 
 // Dynamically import Three.js components with SSR disabled
 const Canvas = dynamic(
@@ -219,33 +224,6 @@ const FloatingParticles = () => {
   );
 };
 
-// Glitch text effect component
-const GlitchText = ({ children, className }) => {
-  return (
-    <div className={`relative ${className}`}>
-      <span className="relative z-10">{children}</span>
-      <span 
-        className="absolute top-0 left-0 text-red-500 opacity-70 animate-pulse"
-        style={{ 
-          transform: 'translate(-2px, -1px)',
-          clipPath: 'polygon(0 0, 100% 0, 100% 45%, 0 45%)'
-        }}
-      >
-        {children}
-      </span>
-      <span 
-        className="absolute top-0 left-0 text-cyan-400 opacity-70 animate-pulse"
-        style={{ 
-          transform: 'translate(2px, 1px)',
-          clipPath: 'polygon(0 55%, 100% 55%, 100% 100%, 0 100%)',
-          animationDelay: '0.1s'
-        }}
-      >
-        {children}
-      </span>
-    </div>
-  );
-};
 
 const HeroSection = () => {
   const controls = useAnimation();
@@ -323,12 +301,32 @@ const HeroSection = () => {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Interactive particle field */}
+      <ParticleField particleCount={80} />
+      
+      {/* Floating fitness icons */}
+      <FloatingElements />
+
       {/* Enhanced animated background */}
       <motion.div 
         className="absolute inset-0 overflow-hidden z-0"
         style={{ x: bgX, y: bgY }}
       >
-        <FloatingParticles />
+        {/* Morphing blobs */}
+        <div className="absolute top-20 left-20">
+          <MorphingBlob 
+            size={300} 
+            colors={['#3b82f6', '#8b5cf6', '#ec4899']} 
+            animationSpeed={2}
+          />
+        </div>
+        <div className="absolute bottom-20 right-20">
+          <MorphingBlob 
+            size={200} 
+            colors={['#10b981', '#f59e0b', '#ef4444']} 
+            animationSpeed={3}
+          />
+        </div>
         
         {/* Animated gradient orbs */}
         {[...Array(6)].map((_, i) => (
@@ -400,7 +398,11 @@ const HeroSection = () => {
           style={{ x: textX, y: textY }}
         >
           <motion.div variants={item}>
-            <GlitchText className="mb-8 text-4xl md:text-6xl lg:text-8xl font-black text-white leading-tight drop-shadow-[0_8px_32px_rgba(0,0,0,0.8)]">
+            <GlitchText 
+              className="mb-8 text-4xl md:text-6xl lg:text-8xl font-black text-white leading-tight drop-shadow-[0_8px_32px_rgba(0,0,0,0.8)]"
+              intensity="high"
+              trigger="hover"
+            >
               Transform Your
             </GlitchText>
           </motion.div>
@@ -426,44 +428,27 @@ const HeroSection = () => {
             variants={item} 
             className="flex flex-col sm:flex-row gap-6 justify-center sm:justify-start mb-16"
           >
-            <motion.button
-              whileHover={{ 
-                scale: 1.08, 
-                boxShadow: '0 20px 40px rgba(59, 130, 246, 0.4)',
-                y: -2
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="relative px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-bold text-lg rounded-full overflow-hidden group shadow-2xl"
+            <InteractiveButton
+              variant="primary"
+              size="lg"
+              magnetic={true}
+              ripple={true}
+              glow={true}
             >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Shop Now
-                <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  →
-                </motion.span>
+              <span className="flex items-center gap-2">
+                Shop Now 🚀
               </span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.3 }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            </motion.button>
+            </InteractiveButton>
             
-            <motion.button
-              whileHover={{ 
-                scale: 1.05, 
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                y: -2
-              }}
-              whileTap={{ scale: 0.95 }}
-              className="px-10 py-5 bg-transparent border-2 border-blue-400 text-blue-400 font-bold text-lg rounded-full hover:shadow-[0_0_30px_rgba(59,130,246,0.3)] transition-all duration-300"
+            <InteractiveButton
+              variant="outline"
+              size="lg"
+              magnetic={true}
+              ripple={true}
+              glow={false}
             >
-              Learn More
-            </motion.button>
+              Learn More ✨
+            </InteractiveButton>
           </motion.div>
 
           <motion.div 
