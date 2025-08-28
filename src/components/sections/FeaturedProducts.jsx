@@ -2,7 +2,9 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Star, ShoppingCart, Heart, Eye, Truck, Shield, Award, TrendingUp } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 const products = [
   {
@@ -119,11 +121,12 @@ const products = [
   }
 ];
 
-
 const ProductCard = ({ product, index }) => {
   const cardRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addItem } = useCart();
+  const router = useRouter();
   
   // Subtle tilt effect
   const x = useMotionValue(0);
@@ -300,6 +303,7 @@ const ProductCard = ({ product, index }) => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={!product.inStock}
+            onClick={() => { addItem(product, 1); router.push('/cart'); }}
           >
             <ShoppingCart size={18} />
             {product.inStock ? 'Add to Cart' : 'Notify When Available'}
@@ -375,11 +379,11 @@ const FeaturedProducts = () => {
         </motion.div>
 
         {/* Products Grid */}
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-  {products.slice(0, 8).map((product, index) => (
-    <ProductCard key={product.id} product={product} index={index} />
-  ))}
-</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          {products.slice(0, 8).map((product, index) => (
+            <ProductCard key={product.id} product={product} index={index} />
+          ))}
+        </div>
 
         {/* Bottom CTA */}
         <motion.div

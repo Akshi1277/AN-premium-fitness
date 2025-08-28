@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 import ScrollProgress from '../components/ui/ScrollProgress';
+import { CartProvider } from '../context/CartContext';
 
 const variants = {
   initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
@@ -14,13 +15,35 @@ const variants = {
 export default function Providers({ children }) {
   const pathname = usePathname();
 
-  // Restore scroll to top on route change for better demo feel
+  // On route change, if a target is set (from Navbar), scroll to it without adding a hash.
+  // Otherwise, default to scrolling to top for this demo.
   useEffect(() => {
-    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof window === 'undefined') return;
+
+    let target = null;
+    try {
+      target = sessionStorage.getItem('scrollTarget');
+    } catch {}
+
+    if (target && pathname === '/') {
+      // Give the page a tick to render before measuring
+      const id = window.setTimeout(() => {
+        if (target === 'TOP') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          const el = document.querySelector(target);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        try { sessionStorage.removeItem('scrollTarget'); } catch {}
+      }, 50);
+      return () => window.clearTimeout(id);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, [pathname]);
 
   return (
-    <>
+    <CartProvider>
       <ScrollProgress />
       <AnimatePresence mode="wait" initial={true}>
         <motion.main
@@ -35,6 +58,6 @@ export default function Providers({ children }) {
           {children}
         </motion.main>
       </AnimatePresence>
-    </>
+    </CartProvider>
   );
 }
