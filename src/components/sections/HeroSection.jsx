@@ -1,7 +1,7 @@
 'use client';
 import { motion, useAnimation, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { ChevronDown, Star, ShieldCheck, Truck, CreditCard, Users, Trophy, Zap } from 'lucide-react';
+import { ChevronDown, Star, ShieldCheck, Truck, CreditCard, Users, Trophy, Zap, ShoppingBag } from 'lucide-react';
 
 // Subtle floating particles for premium ambiance
 const PremiumParticles = ({ mounted }) => {
@@ -59,12 +59,12 @@ const EcomButton = ({ children, variant = 'primary', className = '', ...props })
       className={`
         relative px-8 py-4 font-semibold text-lg tracking-wide transition-all duration-300
         ${variant === 'primary' 
-          ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-xl shadow-amber-900/25' 
-          : 'bg-transparent border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white'
+          ? 'bg-white/10 text-white border border-white/20 hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-amber-400/40' 
+          : 'bg-transparent border border-amber-500/40 text-amber-300 hover:bg-amber-500/10 hover:text-amber-200'
         }
         rounded-lg
-        hover:shadow-2xl hover:shadow-amber-900/40 hover:-translate-y-0.5
-        active:translate-y-0 active:shadow-lg
+        hover:-translate-y-0.5
+        active:translate-y-0
         ${className}
       `}
       whileHover={{ scale: 1.02 }}
@@ -73,7 +73,7 @@ const EcomButton = ({ children, variant = 'primary', className = '', ...props })
     >
       <div className="relative z-10">{children}</div>
       {variant === 'primary' && (
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+        <div className="pointer-events-none absolute inset-0 rounded-lg ring-1 ring-white/10" />
       )}
     </motion.button>
   );
@@ -220,10 +220,10 @@ const HeroSection = () => {
 
           {/* Special Offer Banner (reduced red -> amber) */}
           <motion.div variants={item} className="mb-10">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 rounded-lg text-white font-bold text-lg shadow-xl shadow-amber-900/25">
-              <Zap className="text-amber-200" size={20} />
-              <span>LIMITED TIME: 25% OFF + FREE Installation</span>
-              <div className="bg-white/15 px-3 py-1 rounded text-sm">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-lg text-white font-semibold text-lg bg-white/5 border border-white/10 backdrop-blur-sm">
+              <Zap className="text-amber-300" size={20} />
+              <span>Limited time: 25% OFF + Free Installation</span>
+              <div className="px-3 py-1 rounded text-sm bg-amber-500/15 text-amber-200 border border-amber-500/30">
                 CODE: FITNESS25
               </div>
             </div>
@@ -235,7 +235,10 @@ const HeroSection = () => {
             className="flex flex-col sm:flex-row gap-6 justify-center mb-12"
           >
             <EcomButton variant="primary" className="text-xl px-12 py-5">
-              🛒 Shop Now & Save 25%
+              <span className="inline-flex items-center gap-2">
+                <ShoppingBag size={20} className="text-amber-300" />
+                Shop Now & Save 25%
+              </span>
             </EcomButton>
             
             <EcomButton variant="outline" className="text-xl px-12 py-5">
