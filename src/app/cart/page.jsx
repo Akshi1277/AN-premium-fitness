@@ -54,24 +54,24 @@ export default function CartPage() {
                 key={item.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl"
+                className="flex gap-4 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden flex-col sm:flex-row"
               >
                 <img
                   src={item.image}
                   alt={item.name}
                   className="w-24 h-24 object-cover rounded-lg"
                 />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-white font-semibold">{item.name}</h3>
-                    <div className="text-amber-300 font-bold">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start sm:items-center justify-between gap-2">
+                    <h3 className="text-white font-semibold pr-2 break-words">{item.name}</h3>
+                    <div className="text-amber-300 font-bold shrink-0">
                       ${Number(item.price * item.qty).toFixed(2)}
                     </div>
                   </div>
                   <div className="text-sm text-gray-400">
                     ${Number(item.price).toFixed(2)} each
                   </div>
-                  <div className="mt-3 flex items-center gap-3">
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg">
                       <button
                         className="p-2 hover:bg-white/10 rounded-l-lg"
@@ -91,7 +91,7 @@ export default function CartPage() {
                     </div>
 
                     <button
-                      className="ml-4 inline-flex items-center gap-2 text-red-300 hover:text-red-200"
+                      className="sm:ml-4 inline-flex items-center gap-2 text-red-300 hover:text-red-200 whitespace-nowrap text-sm"
                       onClick={() => removeItem(item.id)}
                     >
                       <Trash2 size={16} /> Remove

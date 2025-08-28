@@ -98,15 +98,32 @@ export default function Navbar() {
           <a href="#contact" onClick={handleSectionClick('#contact')} className="text-white/80 hover:text-white transition-colors">Contact</a>
         </nav>
 
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden ml-auto inline-flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-gray-200 hover:bg-white/10"
-          aria-label="Toggle menu"
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {/* Mobile actions */}
+        <div className="md:hidden ml-auto flex items-center gap-2">
+          {/* Cart icon for mobile */}
+          <Link
+            href="/cart"
+            className="relative inline-flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-gray-200 hover:bg-white/10"
+            aria-label="Cart"
+          >
+            <ShoppingBag size={18} className="text-amber-300" />
+            {totals.count > 0 && (
+              <span className="absolute -top-1 -right-1 text-[10px] px-1 py-0.5 rounded-full bg-amber-600 text-white">
+                {totals.count}
+              </span>
+            )}
+          </Link>
+
+          {/* Hamburger */}
+          <button
+            className="inline-flex items-center justify-center w-10 h-10 rounded-lg border border-white/10 text-gray-200 hover:bg-white/10"
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
 
         <div className="hidden sm:flex items-center gap-3">
           <a
