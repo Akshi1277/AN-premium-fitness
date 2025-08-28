@@ -157,7 +157,7 @@ const ProductCard = ({ product, index }) => {
       case 'Best Seller': return 'bg-amber-600 text-white';
       case 'Staff Pick': return 'bg-blue-600 text-white';
       case 'New': return 'bg-green-600 text-white';
-      case 'Hot Deal': return 'bg-red-600 text-white';
+      case 'Hot Deal': return 'bg-amber-700 text-white';
       default: return 'bg-gray-600 text-white';
     }
   };
@@ -198,7 +198,7 @@ const ProductCard = ({ product, index }) => {
           
           {discount > 0 && (
             <div className="absolute top-3 right-3">
-              <span className="bg-red-600 text-white px-2 py-1 text-xs font-bold rounded-md">
+              <span className="bg-amber-700 text-white px-2 py-1 text-xs font-bold rounded-md">
                 -{discount}%
               </span>
             </div>
@@ -217,7 +217,7 @@ const ProductCard = ({ product, index }) => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsWishlisted(!isWishlisted)}
               >
-                <Heart size={18} className={`${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                <Heart size={18} className={`${isWishlisted ? 'fill-amber-500 text-amber-500' : 'text-white'}`} />
               </motion.button>
               <motion.button
                 className="p-2 bg-white/20 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/30 transition-colors"
@@ -312,7 +312,7 @@ const ProductCard = ({ product, index }) => {
 
 const FeaturedProducts = () => {
   return (
-    <section className="py-20 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden">
+    <section id="products" className="py-20 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden scroll-mt-20">
       {/* Subtle mesh gradient overlay */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-900/10 via-transparent to-amber-800/5" />

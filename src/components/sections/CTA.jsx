@@ -6,7 +6,7 @@ import AnimatedCounter from '../ui/AnimatedCounter';
 
 const CTA = () => {
   return (
-    <section className="relative py-20 overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black">
+    <section id="contact" className="relative py-20 overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black scroll-mt-20">
       {/* Subtle mesh gradient overlay */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-transparent to-amber-800/10" />

@@ -154,7 +154,8 @@ const HeroSection = () => {
 
   return (
     <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      id="home"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden scroll-mt-20"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -191,22 +192,10 @@ const HeroSection = () => {
           animate={mounted ? controls : 'visible'}
           style={{ x: textX, y: textY }}
         >
-          {/* Top Badge */}
-          <motion.div variants={item} className="mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600/20 border border-amber-600/30 rounded-full text-amber-400 text-sm font-medium backdrop-blur-sm">
-              <Trophy size={16} />
-              <span>America's #1 Home Gym Equipment Store</span>
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
-                ))}
-                <span className="ml-1 text-xs">4.9/5 (12,847 reviews)</span>
-              </div>
-            </div>
-          </motion.div>
+          
 
           {/* Headline */}
-          <motion.div variants={item} className="mb-8">
+          <motion.div variants={item} className="mb-8 mt-14">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
               BUILD YOUR
               <span className="block bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">
@@ -229,12 +218,12 @@ const HeroSection = () => {
             Transform your fitness journey today.
           </motion.p>
 
-          {/* Special Offer Banner */}
+          {/* Special Offer Banner (reduced red -> amber) */}
           <motion.div variants={item} className="mb-10">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 rounded-lg text-white font-bold text-lg shadow-xl">
-              <Zap className="text-yellow-300" size={20} />
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 rounded-lg text-white font-bold text-lg shadow-xl shadow-amber-900/25">
+              <Zap className="text-amber-200" size={20} />
               <span>LIMITED TIME: 25% OFF + FREE Installation</span>
-              <div className="bg-white/20 px-3 py-1 rounded text-sm">
+              <div className="bg-white/15 px-3 py-1 rounded text-sm">
                 CODE: FITNESS25
               </div>
             </div>
@@ -336,7 +325,7 @@ const HeroSection = () => {
                   whileHover={{ y: -3 }}
                 >
                   {category.popular && (
-                    <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                    <div className="absolute -top-2 -right-2 bg-amber-700 text-white text-xs px-2 py-1 rounded-full font-bold">
                       POPULAR
                     </div>
                   )}

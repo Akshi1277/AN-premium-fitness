@@ -134,7 +134,8 @@ const CategoryCard = ({ category, index }) => {
 const Categories = () => {
   return (
     <section 
-      className="py-24 relative overflow-hidden"
+      id="categories"
+      className="py-24 relative overflow-hidden scroll-mt-20"
       style={{
         background: 'radial-gradient(ellipse at center, rgba(15, 15, 15, 1) 0%, rgba(0, 0, 0, 1) 100%)'
       }}

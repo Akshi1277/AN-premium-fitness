@@ -67,7 +67,7 @@ const TestimonialCard = ({ testimonial }) => {
 
 const Testimonials = () => {
   return (
-    <section className="relative py-24 overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black">
+    <section id="testimonials" className="relative py-24 overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black scroll-mt-20">
       {/* Subtle mesh gradient overlay */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-amber-900/10 via-transparent to-amber-800/5" />
