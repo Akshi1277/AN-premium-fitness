@@ -1,204 +1,34 @@
 'use client';
-
 import { motion, useAnimation, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
-import * as THREE from 'three';
-import ParticleField from '../ui/ParticleField';
-import MorphingBlob from '../ui/MorphingBlob';
-import FloatingElements from '../ui/FloatingElements';
-import InteractiveButton from '../ui/InteractiveButton';
-import GlitchText from '../ui/GlitchText';
+import { ChevronDown, Star, ShieldCheck, Truck, CreditCard, Users, Trophy, Zap } from 'lucide-react';
 
-// Dynamically import Three.js components with SSR disabled
-const Canvas = dynamic(
-  () => import('@react-three/fiber').then((mod) => mod.Canvas),
-  { ssr: false }
-);
-
-const Sphere = dynamic(
-  () => import('@react-three/drei').then((mod) => mod.Sphere),
-  { ssr: false }
-);
-
-const OrbitControls = dynamic(
-  () => import('@react-three/drei').then((mod) => mod.OrbitControls),
-  { ssr: false }
-);
-
-// Custom useFrame implementation
-const useFrame = (callback) => {
-  const frameRef = useRef();
-  useEffect(() => {
-    frameRef.current = callback;
-    let frameId;
-    const animate = () => {
-      if (typeof frameRef.current === 'function') frameRef.current();
-      frameId = requestAnimationFrame(animate);
-    };
-    frameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frameId);
-  }, [callback]);
-};
-
-// Enhanced GLSL background shader with more dynamic effects
-const BackgroundShader = () => {
-  const mesh = useRef();
-  const materialRef = useRef();
-  const start = useRef(performance.now());
-
-  const vertexShader = `
-    varying vec2 vUv;
-    void main(){
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `;
-
-  const fragmentShader = `
-    precision mediump float;
-    varying vec2 vUv;
-    uniform float uTime;
-    
-    float noise(vec2 st) {
-      return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
-    }
-    
-    float wave(vec2 uv, float speed, float scale) {
-      return sin((uv.x + uv.y) * scale + uTime * speed);
-    }
-    
-    void main(){
-      vec2 uv = vUv;
-      
-      // Multiple wave layers for complexity
-      float w1 = wave(uv, 0.8, 4.0);
-      float w2 = wave(uv + 0.3, 1.2, 6.0);
-      float w3 = wave(uv - 0.1, 0.5, 8.0);
-      float w = (w1 + w2 + w3) * 0.15;
-      
-      // Add some noise for texture
-      float n = noise(uv * 10.0 + uTime * 0.1) * 0.1;
-      
-      // Dynamic color palette
-      vec3 c1 = vec3(0.1, 0.3, 0.8);  // bright blue
-      vec3 c2 = vec3(0.6, 0.2, 0.8);  // purple
-      vec3 c3 = vec3(0.8, 0.4, 0.6);  // pink
-      vec3 c4 = vec3(0.05, 0.05, 0.15); // dark
-      
-      // Create flowing gradient
-      vec3 grad = mix(c1, c2, sin(uv.x * 2.0 + uTime * 0.3) * 0.5 + 0.5);
-      grad = mix(grad, c3, sin(uv.y * 1.5 + uTime * 0.4) * 0.5 + 0.5);
-      grad += w + n;
-      grad = mix(grad, c4, 0.1);
-      
-      gl_FragColor = vec4(grad, 0.8);
-    }
-  `;
-
-  const uniforms = useRef({ uTime: { value: 0 } });
-
-  useFrame(() => {
-    if (!materialRef.current) return;
-    const t = (performance.now() - start.current) / 1000;
-    materialRef.current.uniforms.uTime.value = t;
-  });
-
-  return (
-    <mesh ref={mesh} position={[0, 0, -3]}>
-      <planeGeometry args={[40, 25, 1, 1]} />
-      <shaderMaterial
-        ref={materialRef}
-        attach="material"
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms.current}
-        transparent
-        depthWrite={false}
-      />
-    </mesh>
-  );
-};
-
-// Enhanced 3D Floating Sphere with morphing effects
-const FloatingSphere = () => {
-  const meshRef = useRef();
-  const clockRef = useRef(new THREE.Clock());
-
-  useFrame(() => {
-    if (meshRef.current) {
-      const elapsedTime = clockRef.current.getElapsedTime();
-      meshRef.current.rotation.y = elapsedTime * 0.2;
-      meshRef.current.rotation.x = Math.sin(elapsedTime * 0.3) * 0.1;
-      meshRef.current.position.y = Math.sin(elapsedTime * 0.7) * 0.3;
-      meshRef.current.position.x = Math.cos(elapsedTime * 0.4) * 0.1;
-      
-      // Morphing scale effect
-      const scale = 1.2 + Math.sin(elapsedTime * 0.6) * 0.15;
-      meshRef.current.scale.setScalar(scale);
-    }
-  });
-
-  return (
-    <group>
-      <Sphere ref={meshRef} args={[2, 128, 128]}>
-        <meshStandardMaterial
-          color="#3b82f6"
-          metalness={0.7}
-          roughness={0.2}
-          emissive="#1d4ed8"
-          emissiveIntensity={0.2}
-          transparent
-          opacity={0.85}
-        />
-      </Sphere>
-      
-      {/* Additional floating elements */}
-      {[...Array(8)].map((_, i) => (
-        <Sphere key={i} args={[0.1, 16, 16]} position={[
-          Math.cos(i * Math.PI / 4) * 4,
-          Math.sin(i * Math.PI / 4) * 4,
-          Math.sin(i * 0.5) * 2
-        ]}>
-          <meshStandardMaterial
-            color="#8b5cf6"
-            emissive="#7c3aed"
-            emissiveIntensity={0.5}
-            transparent
-            opacity={0.6}
-          />
-        </Sphere>
-      ))}
-      
-      <ambientLight intensity={0.6} />
-      <pointLight position={[10, 10, 10]} intensity={2} color="#3b82f6" />
-      <pointLight position={[-10, -10, 5]} intensity={1} color="#8b5cf6" />
-    </group>
-  );
-};
-
-// Floating particles component
-const FloatingParticles = () => {
+// Subtle floating particles for premium ambiance
+const PremiumParticles = ({ mounted }) => {
   const [particles, setParticles] = useState([]);
 
   useEffect(() => {
-    const newParticles = [...Array(50)].map((_, i) => ({
+    if (!mounted) return;
+    
+    const newParticles = [...Array(12)].map((_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 4 + 1,
-      duration: Math.random() * 10 + 5,
-      delay: Math.random() * 5,
+      size: Math.random() * 2 + 1,
+      duration: Math.random() * 20 + 15,
+      delay: Math.random() * 8,
     }));
     setParticles(newParticles);
-  }, []);
+  }, [mounted]);
+
+  if (!mounted) return null;
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
-          className="absolute rounded-full bg-gradient-to-r from-blue-400/30 to-purple-400/30 backdrop-blur-sm"
+          className="absolute rounded-full bg-gradient-to-r from-amber-400/10 to-amber-600/5 backdrop-blur-sm"
           style={{
             width: `${particle.size}px`,
             height: `${particle.size}px`,
@@ -206,11 +36,9 @@ const FloatingParticles = () => {
             top: `${particle.y}%`,
           }}
           animate={{
-            y: [0, -100, -200],
-            x: [0, Math.sin(particle.id) * 50, Math.cos(particle.id) * 30],
-            opacity: [0, 0.8, 0],
-            scale: [0, 1, 0.5, 0],
-            rotate: [0, 180, 360],
+            y: [0, -50, -100],
+            opacity: [0, 0.3, 0],
+            scale: [0, 1, 0],
           }}
           transition={{
             duration: particle.duration,
@@ -224,6 +52,32 @@ const FloatingParticles = () => {
   );
 };
 
+// E-commerce focused button component
+const EcomButton = ({ children, variant = 'primary', className = '', ...props }) => {
+  return (
+    <motion.button
+      className={`
+        relative px-8 py-4 font-semibold text-lg tracking-wide transition-all duration-300
+        ${variant === 'primary' 
+          ? 'bg-gradient-to-r from-amber-600 to-amber-700 text-white shadow-xl shadow-amber-900/25' 
+          : 'bg-transparent border-2 border-amber-600 text-amber-600 hover:bg-amber-600 hover:text-white'
+        }
+        rounded-lg
+        hover:shadow-2xl hover:shadow-amber-900/40 hover:-translate-y-0.5
+        active:translate-y-0 active:shadow-lg
+        ${className}
+      `}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      {...props}
+    >
+      <div className="relative z-10">{children}</div>
+      {variant === 'primary' && (
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-amber-600 opacity-0 hover:opacity-100 transition-opacity duration-300 rounded-lg" />
+      )}
+    </motion.button>
+  );
+};
 
 const HeroSection = () => {
   const controls = useAnimation();
@@ -231,15 +85,13 @@ const HeroSection = () => {
   const isInView = useInView(ref, { once: true, amount: 0.3 });
   const [mounted, setMounted] = useState(false);
 
-  // Enhanced mouse-based parallax with more layers
+  // Subtle parallax effects
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const textX = useSpring(useTransform(mx, [-0.5, 0.5], [-30, 30]), { stiffness: 100, damping: 20 });
-  const textY = useSpring(useTransform(my, [-0.5, 0.5], [-15, 15]), { stiffness: 100, damping: 20 });
-  const sphereX = useSpring(useTransform(mx, [-0.5, 0.5], [25, -25]), { stiffness: 80, damping: 25 });
-  const sphereY = useSpring(useTransform(my, [-0.5, 0.5], [15, -15]), { stiffness: 80, damping: 25 });
-  const bgX = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), { stiffness: 200, damping: 30 });
-  const bgY = useSpring(useTransform(my, [-0.5, 0.5], [-5, 5]), { stiffness: 200, damping: 30 });
+  const textX = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), { stiffness: 100, damping: 30 });
+  const textY = useSpring(useTransform(my, [-0.5, 0.5], [-4, 4]), { stiffness: 100, damping: 30 });
+  const bgX = useSpring(useTransform(mx, [-0.5, 0.5], [-15, 15]), { stiffness: 80, damping: 40 });
+  const bgY = useSpring(useTransform(my, [-0.5, 0.5], [-8, 8]), { stiffness: 80, damping: 40 });
 
   const handleMouseMove = (e) => {
     if (!mounted) return;
@@ -255,292 +107,301 @@ const HeroSection = () => {
 
   useEffect(() => {
     setMounted(true);
-    if (isInView) {
+  }, []);
+
+  useEffect(() => {
+    if (mounted && isInView) {
       controls.start('visible');
     }
-  }, [isInView, controls]);
+  }, [mounted, isInView, controls]);
 
   const container = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
       },
     },
   };
 
   const item = {
-    hidden: { y: 30, opacity: 0, rotateX: -15 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
-      rotateX: 0,
       transition: {
         type: 'spring',
-        damping: 15,
-        stiffness: 120,
+        damping: 20,
+        stiffness: 100
       },
     },
   };
 
-  if (!mounted) {
-    return (
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-gray-900">
-        <div className="container mx-auto px-4 text-center">
-          <div className="h-96"></div>
-        </div>
-      </section>
-    );
-  }
+  const fadeUpItem = {
+    hidden: { y: 30, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        damping: 25,
+        stiffness: 120
+      },
+    },
+  };
 
   return (
     <section
-      className="relative h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-gray-900"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Interactive particle field */}
-      <ParticleField particleCount={80} />
+      {/* Sophisticated background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-black to-gray-900" />
       
-      {/* Floating fitness icons */}
-      <FloatingElements />
-
-      {/* Enhanced animated background */}
+      {/* Subtle mesh gradient overlay */}
       <motion.div 
-        className="absolute inset-0 overflow-hidden z-0"
+        className="absolute inset-0"
         style={{ x: bgX, y: bgY }}
       >
-        {/* Morphing blobs */}
-        <div className="absolute top-20 left-20">
-          <MorphingBlob 
-            size={300} 
-            colors={['#3b82f6', '#8b5cf6', '#ec4899']} 
-            animationSpeed={2}
-          />
-        </div>
-        <div className="absolute bottom-20 right-20">
-          <MorphingBlob 
-            size={200} 
-            colors={['#10b981', '#f59e0b', '#ef4444']} 
-            animationSpeed={3}
-          />
-        </div>
-        
-        {/* Animated gradient orbs */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full blur-3xl opacity-20"
-            style={{
-              width: `${200 + i * 50}px`,
-              height: `${200 + i * 50}px`,
-              background: `radial-gradient(circle, ${
-                ['#3b82f6', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#ef4444'][i]
-              }, transparent)`,
-              left: `${20 + i * 15}%`,
-              top: `${10 + i * 10}%`,
-            }}
-            animate={{
-              x: [0, 100, -50, 0],
-              y: [0, -80, 60, 0],
-              scale: [1, 1.2, 0.8, 1],
-            }}
-            transition={{
-              duration: 15 + i * 2,
-              repeat: Infinity,
-              ease: 'linear',
-              delay: i * 2,
-            }}
-          />
-        ))}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-transparent to-amber-800/10" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center_top,rgba(251,191,36,0.15),transparent_50%)]" />
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_right,rgba(217,119,6,0.1),transparent_50%)]" />
       </motion.div>
 
-      {/* Enhanced 3D Sphere */}
-      <motion.div
-        className="absolute right-4 sm:right-10 md:right-24 lg:right-36 xl:right-48 top-1/2 -translate-y-1/2 w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 pointer-events-none z-10"
-        style={{ x: sphereX, y: sphereY }}
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{ 
-          type: 'spring', 
-          stiffness: 80, 
-          damping: 20, 
-          delay: 0.5,
-          duration: 1.5 
-        }}
-      >
-        <Canvas 
-          camera={{ position: [0, 0, 12], fov: 45 }}
-          gl={{ antialias: true, alpha: true }}
-          dpr={typeof window !== 'undefined' ? window.devicePixelRatio : 1}
-        >
-          <BackgroundShader />
-          <FloatingSphere />
-          <OrbitControls
-            enableZoom={false}
-            enablePan={false}
-            enableRotate={false}
-            autoRotate
-            autoRotateSpeed={1}
-          />
-        </Canvas>
-      </motion.div>
+      {/* Premium particles */}
+      <PremiumParticles mounted={mounted} />
 
-      <div className="container mx-auto px-4 text-center relative z-20">
+      {/* Elegant geometric patterns */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute top-20 right-20 w-96 h-96 border border-amber-500 rotate-45" />
+        <div className="absolute bottom-20 left-20 w-64 h-64 border border-amber-400 rotate-12" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-amber-600 rounded-full opacity-50" />
+      </div>
+
+      {/* Main content */}
+      <div className="container mx-auto px-6 lg:px-8 text-center relative z-20 pb-20">
         <motion.div
           ref={ref}
-          className="relative z-20 text-left max-w-4xl mx-auto"
+          className="max-w-6xl mx-auto"
           variants={container}
           initial="hidden"
-          animate={controls}
+          animate={mounted ? controls : 'visible'}
           style={{ x: textX, y: textY }}
         >
-          <motion.div variants={item}>
-            <GlitchText 
-              className="mb-8 text-4xl md:text-6xl lg:text-8xl font-black text-white leading-tight drop-shadow-[0_8px_32px_rgba(0,0,0,0.8)]"
-              intensity="high"
-              trigger="hover"
-            >
-              Transform Your
-            </GlitchText>
-          </motion.div>
-
-          <motion.div variants={item}>
-            <div className="mb-8 text-4xl md:text-6xl lg:text-8xl font-black leading-tight">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-                Fitness Journey
-              </span>
+          {/* Top Badge */}
+          <motion.div variants={item} className="mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600/20 border border-amber-600/30 rounded-full text-amber-400 text-sm font-medium backdrop-blur-sm">
+              <Trophy size={16} />
+              <span>America's #1 Home Gym Equipment Store</span>
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={12} className="fill-amber-400 text-amber-400" />
+                ))}
+                <span className="ml-1 text-xs">4.9/5 (12,847 reviews)</span>
+              </div>
             </div>
           </motion.div>
 
-          <motion.p
-            variants={item}
-            className="text-lg md:text-xl lg:text-2xl text-gray-100 mb-12 max-w-3xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.7)] leading-relaxed"
-          >
-            Discover premium gym equipment and accessories designed to elevate your workout experience with 
-            <span className="text-blue-400 font-semibold"> cutting-edge technology</span> and 
-            <span className="text-purple-400 font-semibold"> unmatched quality</span>.
-          </motion.p>
-
-          <motion.div 
-            variants={item} 
-            className="flex flex-col sm:flex-row gap-6 justify-center sm:justify-start mb-16"
-          >
-            <InteractiveButton
-              variant="primary"
-              size="lg"
-              magnetic={true}
-              ripple={true}
-              glow={true}
-            >
-              <span className="flex items-center gap-2">
-                Shop Now 🚀
+          {/* Headline */}
+          <motion.div variants={item} className="mb-8">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6">
+              BUILD YOUR
+              <span className="block bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 bg-clip-text text-transparent">
+                DREAM GYM
               </span>
-            </InteractiveButton>
-            
-            <InteractiveButton
-              variant="outline"
-              size="lg"
-              magnetic={true}
-              ripple={true}
-              glow={false}
-            >
-              Learn More ✨
-            </InteractiveButton>
+              <span className="block text-3xl md:text-4xl lg:text-5xl font-normal text-gray-300">
+                From Home
+              </span>
+            </h1>
           </motion.div>
 
-          <motion.div 
+          {/* Subheading */}
+          <motion.p 
             variants={item}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center"
+            className="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
+          >
+            Shop premium home gym equipment with <span className="text-amber-400 font-semibold">free shipping</span>, 
+            <span className="text-amber-400 font-semibold"> lifetime warranty</span>, and 
+            <span className="text-amber-400 font-semibold"> 30-day money-back guarantee</span>. 
+            Transform your fitness journey today.
+          </motion.p>
+
+          {/* Special Offer Banner */}
+          <motion.div variants={item} className="mb-10">
+            <div className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 rounded-lg text-white font-bold text-lg shadow-xl">
+              <Zap className="text-yellow-300" size={20} />
+              <span>LIMITED TIME: 25% OFF + FREE Installation</span>
+              <div className="bg-white/20 px-3 py-1 rounded text-sm">
+                CODE: FITNESS25
+              </div>
+            </div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div 
+            variants={fadeUpItem} 
+            className="flex flex-col sm:flex-row gap-6 justify-center mb-12"
+          >
+            <EcomButton variant="primary" className="text-xl px-12 py-5">
+              🛒 Shop Now & Save 25%
+            </EcomButton>
+            
+            <EcomButton variant="outline" className="text-xl px-12 py-5">
+              📞 Call: 1-800-FIT-GEAR
+            </EcomButton>
+          </motion.div>
+
+          {/* Trust Indicators */}
+          <motion.div 
+            variants={fadeUpItem}
+            className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12"
           >
             {[
-              { number: '10K+', label: 'Happy Customers', color: 'from-blue-400 to-cyan-400' },
-              { number: '500+', label: 'Products', color: 'from-purple-400 to-pink-400' },
-              { number: '24/7', label: 'Support', color: 'from-green-400 to-emerald-400' },
-              { number: '30-Day', label: 'Guarantee', color: 'from-orange-400 to-red-400' },
-            ].map((stat, index) => (
-              <motion.div 
-                key={stat.label}
-                className="relative p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-xl"
-                initial={{ opacity: 0, y: 30, rotateY: -15 }}
-                animate={{ 
-                  opacity: 1, 
-                  y: 0,
-                  rotateY: 0,
-                  transition: { 
-                    delay: 0.8 + (index * 0.15),
-                    type: 'spring',
-                    stiffness: 100,
-                    damping: 15
-                  } 
-                }}
-                whileHover={{ 
-                  scale: 1.05, 
-                  y: -5,
-                  boxShadow: '0 20px 40px rgba(255,255,255,0.1)'
-                }}
-              >
-                <div className={`text-3xl md:text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>
-                  {stat.number}
-                </div>
-                <div className="text-sm text-gray-300 font-medium">{stat.label}</div>
-                
-                {/* Animated border */}
+              { number: '500K+', label: 'Happy Customers', icon: Users },
+              { number: '4.9★', label: 'Customer Rating', icon: Star },
+              { number: '100+', label: 'Equipment Types', icon: Trophy },
+              { number: 'FREE', label: 'Shipping & Setup', icon: Truck },
+            ].map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div 
+                  key={stat.label}
+                  className="text-center group p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-300"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={mounted ? { 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { 
+                      delay: 0.8 + (index * 0.1),
+                      type: 'spring',
+                      stiffness: 100,
+                      damping: 15
+                    } 
+                  } : { opacity: 1, y: 0 }}
+                  whileHover={{ y: -2 }}
+                >
+                  <Icon className="w-6 h-6 text-amber-500 mx-auto mb-2 group-hover:text-amber-400 transition-colors" />
+                  <div className="text-2xl md:text-3xl font-bold text-white mb-1">
+                    {stat.number}
+                  </div>
+                  <div className="text-xs text-gray-400 font-medium">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+
+          {/* Popular Categories */}
+          <motion.div
+            variants={fadeUpItem}
+            className="max-w-5xl mx-auto"
+          >
+            <h3 className="text-2xl font-bold text-white mb-6">Shop Popular Categories</h3>
+            <div className="grid md:grid-cols-3 gap-6 text-left">
+              {[
+                {
+                  title: 'Home Gyms & Racks',
+                  description: 'Complete workout systems starting at $899',
+                  price: 'From $899',
+                  popular: true
+                },
+                {
+                  title: 'Cardio Equipment',
+                  description: 'Treadmills, bikes, ellipticals & more',
+                  price: 'From $599',
+                  popular: false
+                },
+                {
+                  title: 'Weights & Accessories',
+                  description: 'Dumbbells, barbells, plates & storage',
+                  price: 'From $49',
+                  popular: true
+                },
+              ].map((category, index) => (
                 <motion.div
-                  className="absolute inset-0 rounded-2xl border-2 border-transparent"
-                  style={{
-                    background: `linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent) border-box`,
-                  }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                />
-              </motion.div>
-            ))}
+                  key={category.title}
+                  className="relative p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 hover:border-amber-600/30 transition-all duration-300 cursor-pointer group"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={mounted ? { 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { 
+                      delay: 1.2 + (index * 0.15) 
+                    } 
+                  } : { opacity: 1, y: 0 }}
+                  whileHover={{ y: -3 }}
+                >
+                  {category.popular && (
+                    <div className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                      POPULAR
+                    </div>
+                  )}
+                  <h4 className="text-xl font-semibold text-white mb-2 group-hover:text-amber-400 transition-colors">
+                    {category.title}
+                  </h4>
+                  <p className="text-gray-400 mb-3 leading-relaxed">
+                    {category.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-bold text-amber-400">{category.price}</span>
+                    <button className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
+                      Shop Now
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Enhanced scroll indicator */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center z-30"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2 }}
-      >
-        <motion.span 
-          className="text-sm text-gray-300 mb-3 font-medium"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          Scroll to Explore
-        </motion.span>
-        <motion.div
-          animate={{
-            y: [0, 15, 0],
+      {/* E-commerce focused bottom bar */}
+<motion.div
+  className="absolute bottom-0 left-0 right-0 z-10"  // Changed from z-30 to z-10
+  initial={{ opacity: 0, y: 20 }}
+  animate={mounted ? { opacity: 1, y: 0 } : { opacity: 1, y: 0 }}
+  transition={{ delay: 1.5 }}
+>
+  <div className="backdrop-blur-md bg-black/40 border-t border-white/10 pointer-events-auto"> {/* Added pointer-events-auto */}
+    <div className="container mx-auto px-6 lg:px-8 py-4">
+      <div className="flex items-center justify-between">
+        {/* E-commerce guarantees */}
+        <div className="hidden md:flex items-center space-x-24 text-xl text-gray-300">
+          <div className="flex items-center space-x-2">
+            <Truck className="w-4 h-4 text-green-400" />
+            <span>FREE Shipping & White Glove Setup</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <ShieldCheck className="w-4 h-4 text-blue-400" />
+            <span>Lifetime Warranty on All Equipment</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <CreditCard className="w-4 h-4 text-amber-400" />
+            <span>0% APR Financing Available</span>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        {/* <motion.button
+          onClick={() => {
+            const y = window.innerHeight;
+            window.scrollTo({ top: y, behavior: 'smooth' });
           }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            repeatType: 'loop',
-          }}
-          className="w-8 h-12 border-2 border-gray-300 rounded-full flex justify-center p-2 bg-white/5 backdrop-blur-sm"
+          className="flex items-center justify-center w-10 h-10 rounded-full border border-amber-500/30 text-amber-500 hover:bg-amber-500/10 hover:border-amber-500/60 transition-all duration-300 ml-auto"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          aria-label="Browse products below"
         >
-          <motion.div
-            className="w-2 h-3 bg-gradient-to-b from-blue-400 to-purple-400 rounded-full"
-            animate={{
-              y: [0, 8],
-              opacity: [0.4, 1, 0.4],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              repeatType: 'loop',
-            }}
-          />
-        </motion.div>
-      </motion.div>
+          <ChevronDown size={16} />
+        </motion.button> */}
+      </div>
+    </div>
+  </div>
+</motion.div>
     </section>
   );
 };

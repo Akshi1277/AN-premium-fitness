@@ -32,9 +32,9 @@ const testimonials = [
 
 const TestimonialCard = ({ testimonial }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+    <div className="p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300">
       <div className="flex items-center mb-4">
-        <div className="relative w-12 h-12 rounded-full overflow-hidden mr-4">
+        <div className="relative w-12 h-12 rounded-full overflow-hidden mr-4 ring-2 ring-amber-500/30">
           <Image
             src={testimonial.avatar}
             alt={testimonial.name}
@@ -44,18 +44,16 @@ const TestimonialCard = ({ testimonial }) => {
           />
         </div>
         <div>
-          <h4 className="font-bold">{testimonial.name}</h4>
-          <p className="text-sm text-gray-500">{testimonial.role}</p>
+          <h4 className="font-semibold text-white">{testimonial.name}</h4>
+          <p className="text-xs text-amber-400/80">{testimonial.role}</p>
         </div>
       </div>
-      <p className="text-gray-600 dark:text-gray-300 mb-4">"{testimonial.content}"</p>
+      <p className="text-gray-300 mb-4">"{testimonial.content}"</p>
       <div className="flex">
         {[...Array(5)].map((_, i) => (
           <svg
             key={i}
-            className={`w-5 h-5 ${
-              i < testimonial.rating ? 'text-yellow-400' : 'text-gray-300'
-            }`}
+            className={`w-5 h-5 ${i < testimonial.rating ? 'text-amber-400' : 'text-gray-600'}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -69,19 +67,31 @@ const TestimonialCard = ({ testimonial }) => {
 
 const Testimonials = () => {
   return (
-    <section className="py-20 bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4">
+    <section className="relative py-24 overflow-hidden bg-gradient-to-b from-black via-gray-900 to-black">
+      {/* Subtle mesh gradient overlay */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/10 via-transparent to-amber-800/5" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center_top,rgba(251,191,36,0.08),transparent_50%)]" />
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_right,rgba(217,119,6,0.06),transparent_50%)]" />
+      </div>
+
+      {/* Elegant geometric patterns */}
+      <div className="absolute inset-0 opacity-[0.02]">
+        <div className="absolute top-20 right-20 w-96 h-96 border border-amber-500 rotate-45" />
+        <div className="absolute bottom-20 left-20 w-64 h-64 border border-amber-400 rotate-12" />
+      </div>
+
+      <div className="container mx-auto px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">What Our Customers Say</h2>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Don't just take our word for it - hear from our satisfied customers
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">What Our Customers Say</h2>
+          <div className="w-16 h-0.5 bg-gradient-to-r from-amber-500 to-amber-600 mx-auto mb-6" />
+          <p className="text-gray-300 max-w-2xl mx-auto">Don't just take our word for it — hear from our satisfied customers.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

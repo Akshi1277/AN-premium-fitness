@@ -1,93 +1,148 @@
 'use client';
 
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef, useState } from 'react';
-import InteractiveButton from '../ui/InteractiveButton';
-import AnimatedCounter from '../ui/AnimatedCounter';
+import { Star, ShoppingCart, Heart, Eye, Truck, Shield, Award, TrendingUp } from 'lucide-react';
 
 const products = [
   {
     id: 1,
-    name: 'Premium Dumbbell Set',
-    price: 199.99,
-    originalPrice: 249.99,
-    image: 'https://placehold.co/600x400/3b82f6/ffffff?text=Dumbbell+Set',
-    category: 'Weights',
+    name: 'PowerMax Elite Home Gym System',
+    price: 2499.99,
+    originalPrice: 3199.99,
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center',
+    category: 'Home Gyms',
     rating: 4.8,
-    reviews: 124,
+    reviews: 324,
     badge: 'Best Seller',
-    features: ['Adjustable Weight', 'Non-Slip Grip', 'Premium Steel'],
+    features: ['150+ Exercise Options', 'Commercial Grade Steel', 'Lifetime Warranty'],
+    inStock: true,
+    shipping: 'Free White Glove Setup'
   },
   {
     id: 2,
-    name: 'Yoga Mat Pro',
-    price: 49.99,
-    originalPrice: 69.99,
-    image: 'https://placehold.co/600x400/10b981/ffffff?text=Yoga+Mat',
-    category: 'Yoga',
+    name: 'Professional Olympic Barbell Set',
+    price: 899.99,
+    originalPrice: 1199.99,
+    image: 'https://images.unsplash.com/photo-1434596922112-19c563067271?w=600&h=400&fit=crop&crop=center',
+    category: 'Weights',
     rating: 4.9,
-    reviews: 89,
-    badge: 'Eco-Friendly',
-    features: ['Non-Toxic Material', 'Extra Thick', 'Anti-Slip Surface'],
+    reviews: 156,
+    badge: 'Staff Pick',
+    features: ['45lb Olympic Bar', '300lb Weight Set', 'Rubber Coated Plates'],
+    inStock: true,
+    shipping: 'Free Shipping'
   },
   {
     id: 3,
-    name: 'Adjustable Bench',
-    price: 299.99,
-    originalPrice: 399.99,
-    image: 'https://placehold.co/600x400/6366f1/ffffff?text=Gym+Bench',
-    category: 'Equipment',
+    name: 'Commercial Adjustable Bench',
+    price: 699.99,
+    originalPrice: 899.99,
+    image: 'https://images.unsplash.com/photo-1549476464-37392f717541?w=600&h=400&fit=crop&crop=center',
+    category: 'Benches',
     rating: 4.7,
-    reviews: 156,
-    badge: 'New Arrival',
-    features: ['7 Positions', 'Heavy Duty Frame', 'Comfortable Padding'],
+    reviews: 89,
+    badge: 'New',
+    features: ['12 Position Adjustments', '1000lb Weight Capacity', 'Premium Leather Padding'],
+    inStock: true,
+    shipping: 'Free Shipping'
   },
   {
     id: 4,
-    name: 'Resistance Bands Set',
-    price: 29.99,
-    originalPrice: 39.99,
-    image: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Resistance+Bands',
-    category: 'Accessories',
+    name: 'Elite Cardio Treadmill Pro',
+    price: 1899.99,
+    originalPrice: 2399.99,
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop&crop=center',
+    category: 'Cardio',
     rating: 4.6,
     reviews: 203,
     badge: 'Hot Deal',
-    features: ['5 Resistance Levels', 'Portable Design', 'Exercise Guide'],
+    features: ['3.5 HP Motor', '15% Incline', 'Interactive Touchscreen'],
+    inStock: true,
+    shipping: 'Free Installation'
   },
+  {
+    id: 5,
+    name: 'Heavy Duty Power Rack',
+    price: 1299.99,
+    originalPrice: 1699.99,
+    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop&crop=center',
+    category: 'Racks',
+    rating: 4.8,
+    reviews: 267,
+    badge: 'Best Seller',
+    features: ['1000lb Weight Capacity', 'Multi-Grip Pull-Up Bar', 'Safety Spotter Arms'],
+    inStock: true,
+    shipping: 'Free Installation'
+  },
+  {
+    id: 6,
+    name: 'Premium Kettlebell Set',
+    price: 349.99,
+    originalPrice: 449.99,
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&h=400&fit=crop&crop=center',
+    category: 'Weights',
+    rating: 4.7,
+    reviews: 143,
+    badge: 'Staff Pick',
+    features: ['Cast Iron Construction', '5-50lb Range', 'Wide Handle Grip'],
+    inStock: true,
+    shipping: 'Free Shipping'
+  },
+  {
+    id: 7,
+    name: 'Smart Exercise Bike Pro',
+    price: 1599.99,
+    originalPrice: 1999.99,
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=400&fit=crop&crop=center',
+    category: 'Cardio',
+    rating: 4.6,
+    reviews: 189,
+    badge: 'New',
+    features: ['Interactive Display', 'Magnetic Resistance', 'Heart Rate Monitor'],
+    inStock: true,
+    shipping: 'Free Setup'
+  },
+  {
+    id: 8,
+    name: 'Multi-Station Cable Machine',
+    price: 2199.99,
+    originalPrice: 2799.99,
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&crop=center',
+    category: 'Machines',
+    rating: 4.9,
+    reviews: 98,
+    badge: 'Hot Deal',
+    features: ['Dual Weight Stacks', '200lb Per Stack', '15+ Exercise Options'],
+    inStock: true,
+    shipping: 'Free White Glove Setup'
+  }
 ];
+
 
 const ProductCard = ({ product, index }) => {
   const cardRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
   
-  // Enhanced 3D tilt effect
+  // Subtle tilt effect
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-100, 100], [15, -15]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(x, [-100, 100], [-15, 15]), { stiffness: 300, damping: 30 });
-
-  // Magnetic button effect
-  const btnX = useSpring(0, { stiffness: 400, damping: 25 });
-  const btnY = useSpring(0, { stiffness: 400, damping: 25 });
+  const rotateX = useSpring(useTransform(y, [-100, 100], [5, -5]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(x, [-100, 100], [-5, 5]), { stiffness: 300, damping: 30 });
 
   const onMouseMove = (e) => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (!rect) return;
     const posX = e.clientX - (rect.left + rect.width / 2);
     const posY = e.clientY - (rect.top + rect.height / 2);
-    x.set(Math.max(-100, Math.min(100, posX / 3)));
-    y.set(Math.max(-100, Math.min(100, posY / 3)));
-    btnX.set(posX * 0.08);
-    btnY.set(posY * 0.08);
+    x.set(Math.max(-100, Math.min(100, posX / 5)));
+    y.set(Math.max(-100, Math.min(100, posY / 5)));
   };
 
   const onMouseLeave = () => {
     x.set(0); 
     y.set(0);
-    btnX.set(0); 
-    btnY.set(0);
     setIsHovered(false);
   };
 
@@ -97,10 +152,20 @@ const ProductCard = ({ product, index }) => {
 
   const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
 
+  const getBadgeColor = (badge) => {
+    switch (badge) {
+      case 'Best Seller': return 'bg-amber-600 text-white';
+      case 'Staff Pick': return 'bg-blue-600 text-white';
+      case 'New': return 'bg-green-600 text-white';
+      case 'Hot Deal': return 'bg-red-600 text-white';
+      default: return 'bg-gray-600 text-white';
+    }
+  };
+
   return (
     <motion.div
       ref={cardRef}
-      className="group relative perspective-1000"
+      className="group relative"
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
       onMouseEnter={onMouseEnter}
@@ -109,260 +174,160 @@ const ProductCard = ({ product, index }) => {
       transition={{ delay: index * 0.1, type: 'spring', stiffness: 100 }}
     >
       <motion.div
-        className="relative w-full h-[500px] preserve-3d cursor-pointer"
+        className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:bg-white/10 hover:border-amber-600/30 transition-all duration-300"
         style={{ rotateX, rotateY }}
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
-        onClick={() => setIsFlipped(!isFlipped)}
+        whileHover={{ y: -5 }}
       >
-        {/* Front of card */}
-        <motion.div
-          className="absolute inset-0 w-full h-full backface-hidden bg-white/95 dark:bg-gray-800/95 rounded-3xl overflow-hidden shadow-2xl border border-white/20 dark:border-white/10 backdrop-blur-lg"
-          whileHover={{ y: -10 }}
-        >
-          {/* Discount badge */}
-          <div className="absolute top-4 left-4 z-20">
-            <motion.div
-              className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg"
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              -{discount}%
-            </motion.div>
-          </div>
-
-          {/* Category badge */}
-          <div className="absolute top-4 right-4 z-20">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+        {/* Product Image */}
+        <div className="relative h-64 overflow-hidden bg-gray-800">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          
+          {/* Badges */}
+          <div className="absolute top-3 left-3">
+            <span className={`px-2 py-1 text-xs font-semibold rounded-md ${getBadgeColor(product.badge)}`}>
               {product.badge}
-            </div>
+            </span>
           </div>
-
-          {/* Product image with hover effects */}
-          <div className="relative h-64 w-full overflow-hidden">
-            <Image
-              src={product.image}
-              alt={product.name}
-              fill
-              className="object-cover transition-all duration-700 group-hover:scale-110"
-              unoptimized
-            />
-            
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            
-            {/* Floating elements */}
-            <AnimatePresence>
-              {isHovered && (
-                <motion.div
-                  className="absolute inset-0 pointer-events-none"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  {[...Array(6)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-2 h-2 bg-white/60 rounded-full"
-                      style={{
-                        left: `${20 + i * 15}%`,
-                        top: `${30 + (i % 2) * 40}%`,
-                      }}
-                      animate={{
-                        y: [0, -20, 0],
-                        opacity: [0, 1, 0],
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: i * 0.2,
-                      }}
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Product info */}
-          <div className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded-full">
-                {product.category}
-              </span>
-              <div className="flex items-center space-x-1">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => (
-                    <motion.svg
-                      key={i}
-                      className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: i * 0.1 }}
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </motion.svg>
-                  ))}
-                </div>
-                <span className="text-sm text-gray-500">({product.reviews})</span>
-              </div>
-            </div>
-
-            <h3 className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              {product.name}
-            </h3>
-
-            <div className="flex items-center space-x-2">
-              <span className="text-2xl font-black text-gray-900 dark:text-white">
-                ${product.price.toFixed(2)}
-              </span>
-              <span className="text-lg text-gray-500 line-through">
-                ${product.originalPrice.toFixed(2)}
+          
+          {discount > 0 && (
+            <div className="absolute top-3 right-3">
+              <span className="bg-red-600 text-white px-2 py-1 text-xs font-bold rounded-md">
+                -{discount}%
               </span>
             </div>
+          )}
 
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              className="relative w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 text-white py-3 rounded-2xl overflow-hidden font-bold text-lg shadow-lg group"
-              style={{ x: btnX, y: btnY }}
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                <motion.span
-                  whileHover={{ rotate: [0, -10, 10, 0] }}
-                  transition={{ duration: 0.5 }}
-                >
-                  🛒
-                </motion.span>
-                Add to Cart
-              </span>
-              
-              {/* Animated background */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-white/30 via-yellow-300/20 to-transparent"
-                initial={{ x: '-100%' }}
-                animate={{ x: ['100%', '-100%'] }}
-                transition={{ 
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                  ease: 'linear'
-                }}
-              />
-              
-              {/* Pulse effect on hover */}
-              <motion.div
-                className="absolute inset-0 bg-white/10 rounded-2xl"
-                initial={{ scale: 1, opacity: 0 }}
-                whileHover={{ 
-                  scale: [1, 1.05, 1],
-                  opacity: [0, 0.3, 0]
-                }}
-                transition={{ duration: 0.6, repeat: Infinity }}
-              />
-            </motion.button>
-          </div>
-        </motion.div>
-
-        {/* Back of card */}
-        <motion.div
-          className="absolute inset-0 w-full h-full backface-hidden bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-3xl overflow-hidden shadow-2xl"
-          style={{ rotateY: 180 }}
-        >
-          <div className="p-6 h-full flex flex-col justify-center text-white">
-            <h3 className="text-2xl font-bold mb-6 text-center">{product.name}</h3>
-            
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold">Key Features:</h4>
-              <ul className="space-y-2">
-                {product.features.map((feature, i) => (
-                  <motion.li
-                    key={i}
-                    className="flex items-center space-x-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ 
-                      opacity: 1, 
-                      x: 0,
-                      transition: { delay: i * 0.1 }
-                    }}
-                    transition={{ delay: i * 0.1 }}
-                    whileHover={{ x: 5, scale: 1.05 }}
-                  >
-                    <motion.span 
-                      className="w-2 h-2 bg-white rounded-full"
-                      animate={{ 
-                        scale: [1, 1.2, 1],
-                        opacity: [1, 0.7, 1]
-                      }}
-                      transition={{ 
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: i * 0.3
-                      }}
-                    />
-                    <span>{feature}</span>
-                  </motion.li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-8 text-center">
-              <InteractiveButton
-                variant="secondary"
-                size="md"
-                className="bg-white text-blue-600 hover:bg-gray-100"
+          {/* Quick Actions */}
+          <motion.div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            initial={{ scale: 0 }}
+            whileHover={{ scale: 1 }}
+          >
+            <div className="flex gap-2">
+              <motion.button
+                className="p-2 bg-white/20 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/30 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setIsWishlisted(!isWishlisted)}
               >
-                View Details
-              </InteractiveButton>
+                <Heart size={18} className={`${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+              </motion.button>
+              <motion.button
+                className="p-2 bg-white/20 backdrop-blur-sm rounded-full shadow-lg hover:bg-white/30 transition-colors"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Eye size={18} className="text-white" />
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Shipping Info */}
+          <div className="absolute bottom-3 left-3">
+            <div className="flex items-center gap-1 bg-black/70 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs">
+              <Truck size={12} />
+              <span>{product.shipping}</span>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
 
-      {/* Glow effect */}
-      <motion.div
-        className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 blur-xl -z-10"
-        animate={{
-          opacity: isHovered ? 0.6 : 0,
-          scale: isHovered ? 1.05 : 1,
-        }}
-        transition={{ duration: 0.3 }}
-      />
+        {/* Product Info */}
+        <div className="p-5">
+          {/* Category and Rating */}
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium text-amber-400 uppercase tracking-wider">
+              {product.category}
+            </span>
+            <div className="flex items-center gap-1">
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    size={14}
+                    className={`${i < Math.floor(product.rating) ? 'fill-amber-400 text-amber-400' : 'text-gray-500'}`}
+                  />
+                ))}
+              </div>
+              <span className="text-xs text-gray-400 ml-1">({product.reviews})</span>
+            </div>
+          </div>
+
+          {/* Product Name */}
+          <h3 className="font-semibold text-white mb-3 text-lg leading-tight group-hover:text-amber-400 transition-colors">
+            {product.name}
+          </h3>
+
+          {/* Key Features */}
+          <ul className="text-xs text-gray-400 mb-4 space-y-1">
+            {product.features.slice(0, 2).map((feature, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <div className="w-1 h-1 bg-amber-500 rounded-full"></div>
+                {feature}
+              </li>
+            ))}
+          </ul>
+
+          {/* Pricing */}
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl font-bold text-white">
+              ${product.price.toLocaleString()}
+            </span>
+            {product.originalPrice > product.price && (
+              <span className="text-lg text-gray-500 line-through">
+                ${product.originalPrice.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Stock Status */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className={`w-2 h-2 rounded-full ${product.inStock ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <span className={`text-xs font-medium ${product.inStock ? 'text-green-400' : 'text-red-400'}`}>
+              {product.inStock ? 'In Stock' : 'Out of Stock'}
+            </span>
+          </div>
+
+          {/* Add to Cart Button */}
+          <motion.button
+            className="w-full bg-gradient-to-r from-amber-600 to-amber-700 text-white py-3 px-4 rounded-lg font-semibold hover:from-amber-500 hover:to-amber-600 transition-colors flex items-center justify-center gap-2"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            disabled={!product.inStock}
+          >
+            <ShoppingCart size={18} />
+            {product.inStock ? 'Add to Cart' : 'Notify When Available'}
+          </motion.button>
+        </div>
+      </motion.div>
     </motion.div>
   );
 };
 
 const FeaturedProducts = () => {
   return (
-    <section className="py-24 bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/20 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 blur-xl"
-            style={{
-              width: `${100 + i * 50}px`,
-              height: `${100 + i * 50}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              x: [0, 100, -50, 0],
-              y: [0, -100, 50, 0],
-              scale: [1, 1.2, 0.8, 1],
-            }}
-            transition={{
-              duration: 20 + i * 2,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          />
-        ))}
+    <section className="py-20 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden">
+      {/* Subtle mesh gradient overlay */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-900/10 via-transparent to-amber-800/5" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_center_top,rgba(251,191,36,0.08),transparent_50%)]" />
+        <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_right,rgba(217,119,6,0.05),transparent_50%)]" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      {/* Elegant geometric patterns */}
+      <div className="absolute inset-0 opacity-[0.01]">
+        <div className="absolute top-20 right-20 w-96 h-96 border border-amber-500 rotate-45" />
+        <div className="absolute bottom-20 left-20 w-64 h-64 border border-amber-400 rotate-12" />
+      </div>
+
+      <div className="container mx-auto px-6 lg:px-8 relative z-10">
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -371,116 +336,104 @@ const FeaturedProducts = () => {
           className="text-center mb-16"
         >
           <motion.h2 
-            className="text-4xl md:text-6xl font-black mb-6"
-            initial={{ opacity: 0, scale: 0.5 }}
+            className="text-4xl md:text-5xl font-bold text-white mb-6"
+            initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
           >
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Featured Products
-            </span>
+            Featured Equipment
           </motion.h2>
           
           <motion.p
-            className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Discover our premium selection of fitness equipment designed to transform your workout experience with 
-            <span className="text-blue-600 font-semibold"> innovative technology</span> and 
-            <span className="text-purple-600 font-semibold"> superior craftsmanship</span>
+            Professional-grade fitness equipment trusted by elite athletes and home fitness enthusiasts worldwide. 
+            Each product comes with our <span className="text-amber-400 font-semibold">lifetime warranty</span> and 
+            <span className="text-amber-400 font-semibold"> expert installation</span>.
           </motion.p>
 
-          {/* Interactive hint */}
-          <motion.div
-            className="mt-8 text-sm text-gray-500 dark:text-gray-400"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-          >
-            <motion.span
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              💡 Click cards to flip and see features
-            </motion.span>
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap justify-center items-center gap-8 text-sm text-gray-300">
+            <div className="flex items-center gap-2">
+              <Shield size={16} className="text-blue-400" />
+              <span>Lifetime Warranty</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Truck size={16} className="text-green-400" />
+              <span>Free Installation</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Award size={16} className="text-amber-400" />
+              <span>Industry Leading Quality</span>
+            </div>
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
-          ))}
-        </div>
+        {/* Products Grid */}
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+  {products.slice(0, 8).map((product, index) => (
+    <ProductCard key={product.id} product={product} index={index} />
+  ))}
+</div>
 
-        {/* Stats section */}
+        {/* Bottom CTA */}
         <motion.div
-          className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-6"
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <motion.button
+            className="bg-gradient-to-r from-amber-600 to-amber-700 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-amber-500 hover:to-amber-600 transition-colors inline-flex items-center gap-2 shadow-xl shadow-amber-900/25"
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <TrendingUp size={20} />
+            View All Equipment
+          </motion.button>
+        </motion.div>
+
+        {/* Stats Section */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
           {[
-            { number: '10K+', label: 'Happy Customers', color: 'from-blue-400 to-cyan-400' },
-            { number: '500+', label: 'Products', color: 'from-purple-400 to-pink-400' },
-            { number: '24/7', label: 'Support', color: 'from-green-400 to-emerald-400' },
-            { number: '30-Day', label: 'Guarantee', color: 'from-orange-400 to-red-400' },
+            { number: '500K+', label: 'Equipment Sold', color: 'text-blue-400' },
+            { number: '4.9★', label: 'Average Rating', color: 'text-amber-400' },
+            { number: '50+', label: 'Countries Served', color: 'text-green-400' },
+            { number: '25+', label: 'Years Experience', color: 'text-purple-400' },
           ].map((stat, index) => (
             <motion.div 
               key={stat.label}
-              className="relative p-6 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-xl group cursor-pointer"
-              initial={{ opacity: 0, y: 30, rotateY: -15 }}
+              className="text-center p-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 hover:border-amber-600/30 transition-all duration-300"
+              initial={{ opacity: 0, y: 30 }}
               animate={{ 
                 opacity: 1, 
-                y: 0, 
-                rotateY: 0,
+                y: 0,
                 transition: { delay: index * 0.1 }
               }}
-              whileHover={{ 
-                scale: 1.05, 
-                y: -5,
-                boxShadow: '0 20px 40px rgba(255,255,255,0.2)',
-                rotateY: 5
-              }}
+              whileHover={{ y: -5 }}
             >
-              <AnimatedCounter
-                to={parseInt(stat.number.replace(/\D/g, '')) || 24}
-                suffix={stat.number.includes('+') ? '+' : stat.number.includes('-') ? '-Day' : ''}
-                className={`text-3xl md:text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2 block`}
-              />
-              <div className="text-sm text-gray-300 font-medium">{stat.label}</div>
-              
-              {/* Hover glow effect */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-pink-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                animate={{
-                  background: [
-                    'radial-gradient(circle at 0% 0%, rgba(59,130,246,0.1), transparent)',
-                    'radial-gradient(circle at 100% 100%, rgba(139,92,246,0.1), transparent)',
-                    'radial-gradient(circle at 0% 100%, rgba(236,72,153,0.1), transparent)',
-                    'radial-gradient(circle at 100% 0%, rgba(59,130,246,0.1), transparent)',
-                  ]
-                }}
-                transition={{ duration: 4, repeat: Infinity }}
-              />
-              
-              {/* Animated border */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl"
-                style={{ 
-                  background: 'linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent)',
-                  mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                  maskComposite: 'xor',
-                  padding: '2px'
-                }}
-                animate={{ 
-                  background: [
-                    'linear-gradient(0deg, transparent, rgba(255,255,255,0.2), transparent)',
-                    'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-                    'linear-gradient(180deg, transparent, rgba(255,255,255,0.2), transparent)',
-                    'linear-gradient(270deg, transparent, rgba(255,255,255,0
+              <div className={`text-3xl md:text-4xl font-bold ${stat.color} mb-2`}>
+                {stat.number}
+              </div>
+              <div className="text-sm text-gray-400 font-medium">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+export default FeaturedProducts;
