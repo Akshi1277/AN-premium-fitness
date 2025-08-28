@@ -6,10 +6,11 @@ import { useEffect } from 'react';
 import ScrollProgress from '../components/ui/ScrollProgress';
 import { CartProvider } from '../context/CartContext';
 
+// Use opacity-only transitions to avoid creating a containing block that breaks position: fixed
 const variants = {
-  initial: { opacity: 0, y: 10, filter: 'blur(4px)' },
-  animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
-  exit: { opacity: 0, y: -10, filter: 'blur(4px)' },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
 export default function Providers({ children }) {
@@ -52,7 +53,7 @@ export default function Providers({ children }) {
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ duration: 0.35, ease: 'easeOut' }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
           className="min-h-screen"
         >
           {children}
